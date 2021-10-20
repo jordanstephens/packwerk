@@ -59,7 +59,7 @@ module Packwerk
       def each_child(node)
         if block_given?
           node.children.each do |child|
-            yield child if child.is_a?(Parser::AST::Node)
+            yield child if child.is_a?(AST::Node)
           end
         else
           enum_for(:each_child, node)
@@ -141,6 +141,7 @@ module Packwerk
       end
 
       def module_name_from_definition(node)
+        return unless node
         case type_of(node)
         when CLASS, MODULE
           # "class My::Class; end"
@@ -219,6 +220,7 @@ module Packwerk
         :MODULE, :SELF, :STRING, :SYMBOL,
       )
 
+      sig { params(node: AST::Node).returns(T.untyped) }
       def type_of(node)
         node.type
       end
