@@ -18,7 +18,8 @@ module Packwerk
           .map { |p| Pathname.new(p).relative_path_from(app_dir).to_s }
 
       resolver = ConstantResolver.new(root_path: app_dir, load_paths: load_paths)
-      packages = ::Packwerk::PackageSet.load_all_from(app_dir)
+      configuration = Configuration.new({}, config_path: "#{app_dir}/.")
+      packages = ::Packwerk::PackageSet.load_all_from(configuration)
 
       @context_provider = ::Packwerk::ConstantDiscovery.new(
         constant_resolver: resolver,

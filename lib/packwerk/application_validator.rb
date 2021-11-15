@@ -298,7 +298,7 @@ module Packwerk
     end
 
     def package_manifests(glob_pattern = package_glob)
-      PackageSet.package_paths(@configuration.root_path, glob_pattern)
+      PackageSet.package_paths(@configuration, glob_pattern)
         .map { |f| File.realpath(f) }
     end
 
@@ -351,7 +351,7 @@ module Packwerk
     end
 
     def package_set
-      @package_set ||= Packwerk::PackageSet.load_all_from(@configuration.root_path, package_pathspec: package_glob)
+      @package_set ||= Packwerk::PackageSet.load_all_from(@configuration, package_pathspec: package_glob)
     end
 
     def merge_results(results, separator: "\n===\n", errors_headline: "")

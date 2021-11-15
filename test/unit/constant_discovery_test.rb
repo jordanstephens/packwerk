@@ -6,14 +6,15 @@ require "test_helper"
 module Packwerk
   class ConstantDiscoveryTest < Minitest::Test
     def setup
-      @root_path = "test/fixtures/skeleton/"
+      root_path = "test/fixtures/skeleton/"
       load_paths =
-        Dir.glob(File.join(@root_path, "components/*/{app,test}/*{/concerns,}"))
-          .map { |p| Pathname.new(p).relative_path_from(@root_path).to_s }
+        Dir.glob(File.join(root_path, "components/*/{app,test}/*{/concerns,}"))
+          .map { |p| Pathname.new(p).relative_path_from(root_path).to_s }
 
+      @configuration = Configuration.new({}, config_path: "#{root_path}/.")
       @discovery = ConstantDiscovery.new(
-        constant_resolver: ConstantResolver.new(root_path: @root_path, load_paths: load_paths),
-        packages: PackageSet.load_all_from(@root_path)
+        constant_resolver: ConstantResolver.new(root_path: root_path, load_paths: load_paths),
+        packages: PackageSet.load_all_from(@configuration)
       )
       super
     end
@@ -39,7 +40,7 @@ module Packwerk
       constant_resolver.stubs(:resolve).raises(ConstantResolver::Error, "initial error message")
       discovery = ConstantDiscovery.new(
         constant_resolver: constant_resolver,
-        packages: PackageSet.load_all_from(@root_path)
+        packages: PackageSet.load_all_from(@configuration)
       )
 
       error = assert_raises(ConstantResolver::Error) do

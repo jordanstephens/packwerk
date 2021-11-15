@@ -9,11 +9,8 @@ module Packwerk
     extend T::Sig
 
     attr_reader(
-      :root_path,
-      :load_paths,
-      :package_paths,
+      :configuration,
       :inflector,
-      :custom_associations,
       :checker_classes,
     )
 
@@ -25,30 +22,34 @@ module Packwerk
     class << self
       def from_configuration(configuration)
         inflector = ::Packwerk::Inflector.from_file(configuration.inflections_file)
-        new(
-          root_path: configuration.root_path,
-          load_paths: configuration.load_paths,
-          package_paths: configuration.package_paths,
-          inflector: inflector,
-          custom_associations: configuration.custom_associations
-        )
+        new(configuration: configuration, inflector: inflector)
       end
     end
 
     def initialize(
-      root_path:,
-      load_paths:,
-      package_paths: nil,
+      configuration:,
       inflector: nil,
-      custom_associations: [],
       checker_classes: DEFAULT_CHECKERS
     )
-      @root_path = root_path
-      @load_paths = load_paths
-      @package_paths = package_paths
+      @configuration = configuration
       @inflector = inflector
-      @custom_associations = custom_associations
       @checker_classes = checker_classes
+    end
+
+    def root_path
+      configuration.root_path
+    end
+
+    def load_paths
+      configuration.load_paths
+    end
+
+    def package_paths
+      configuration.package_paths
+    end
+
+    def custom_associations
+      configuration.custom_associations
     end
 
     sig { params(file: String).returns(T::Array[Packwerk::Offense]) }
@@ -94,7 +95,7 @@ module Packwerk
 
     sig { returns(PackageSet) }
     def package_set
-      ::Packwerk::PackageSet.load_all_from(root_path, package_pathspec: package_paths)
+      ::Packwerk::PackageSet.load_all_from(configuration, package_pathspec: package_paths)
     end
 
     sig { returns(T::Array[ReferenceChecking::Checkers::Checker]) }
